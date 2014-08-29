@@ -15,6 +15,7 @@
 
 <div id="map" style="width:600px; height:480px;"></div>
 <p id="type">Gesture Type: <em></em></p>
+<p id="event">Event Type: <em></em></p>
 <p id="state">Gesture Sate: <em></em></p>
 <input type="button" value="拡大" onclick="map.zoomIn();" />
 <input type="button" value="縮小" onclick="map.zoomOut();" />
@@ -57,32 +58,39 @@ window.onload = function() {
 
 //Leap.loop部分
 var typeValue = $('p#type em');
+var eventValue = $('p#event em');
 var stateValue = $('p#state em');
 var motionFlag = true;
 Leap.loop({enableGestures: true}, function(frame){
-  $(frame.gestures).leapSwipeHelper(function(event){ 
-    
-    if (motionFlag === false) return; 
-    switch(event.type) {
-      case "up":
-        map.panDirection(0,0.5);
-        break;
-      case "down":
-        map.panDirection(0,-0.5);
-        break;
-      case "left":
-        map.panDirection(0.5,0);
-        break;
-      case "right":
-        map.panDirection(-0.5,0);
-        break;
-    }
-    motionFlag = false;
-    setTimeout(function(){
-      motionFlag = true;
-    }, 1300);
-
-  });
+	$(frame.gestures).each(function() {
+		console.log(this.type);
+		console.log(this.state);
+		typeValue.html(this.type);
+		stateValue.html(this.state);
+	});
+	$(frame.gestures).leapSwipeHelper(function(event){
+		console.log(event.type);
+		eventValue.html(event.type);
+		if (motionFlag === false) return;
+		switch(event.type) {
+			case "up":
+				map.zoomOut();
+				break;
+			case "down":
+				map.zoomIn();
+				break;
+			case "left":
+				map.panDirection(0.5,0,true);
+				break;
+			case "right":
+				map.panDirection(-0.5,0,true);
+				break;
+		}
+		motionFlag = false;
+		setTimeout(function(){
+			motionFlag = true;
+		}, 1300);
+	});
 });
 </script>
 </body>
